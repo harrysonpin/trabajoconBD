@@ -78,5 +78,30 @@ fun UserApp(userRepository: UserRepository){
             }) {
             Text(text = "Registrar")
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        var users by remember { mutableStateOf(listOf<User>()) }
+
+        Button(
+            onClick = {
+                scope.launch{
+                    users = withContext(Dispatchers.IO){
+                        userRepository.getAllUsers()
+                    }
+                }
+            }
+        ){
+            Text("listar")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Column {
+            users.forEach{ user->
+                Text("${user.nombre} ${user.apellido} ${user.edad}")
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+        }
     }
 }
