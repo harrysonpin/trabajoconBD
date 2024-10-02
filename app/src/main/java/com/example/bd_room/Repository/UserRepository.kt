@@ -11,4 +11,10 @@ class UserRepository(private val userDao: UserDao){
     suspend fun getAllUsers(): List<User>{
         return userDao.getAllUsers()
     }
+    suspend fun eliminar(user: User) {
+        userDao.deleteUser(user)
+    }
+    suspend fun actualizar(user: User) {
+        userDao.updateUser(user)
+    }
 }

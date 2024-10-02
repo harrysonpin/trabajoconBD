@@ -34,6 +34,7 @@ fun UserApp(userRepository: UserRepository){
     var nombre by remember { mutableStateOf("") }
     var apellido by remember { mutableStateOf("") }
     var edad by remember { mutableStateOf("") }
+    var id by remember { mutableStateOf("") }
     var scope = rememberCoroutineScope()
 
     var context = LocalContext.current
@@ -52,13 +53,13 @@ fun UserApp(userRepository: UserRepository){
         TextField(
             value = apellido,
             onValueChange = { apellido = it },
-            label = { Text("apellido") }
+            label = { Text(text = "apellido") }
         )
         Spacer(modifier = Modifier.height(8.dp))
         TextField(
             value = edad,
             onValueChange = { edad = it },
-            label = { Text("Edad") },
+            label = { Text(text = "Edad") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -99,9 +100,51 @@ fun UserApp(userRepository: UserRepository){
 
         Column {
             users.forEach{ user->
-                Text("${user.nombre} ${user.apellido} ${user.edad}")
+                Text("${user.id} ${user.nombre} ${user.apellido} ${user.edad} ")
                 Spacer(modifier = Modifier.height(4.dp))
             }
+        }
+        Button(
+            onClick = {
+                if (users.isNotEmpty()) {
+                    val userToDelete = users.last()
+                    scope.launch {
+                        withContext(Dispatchers.IO) {
+                            userRepository.eliminar(userToDelete)
+                        }
+                        users = users - userToDelete
+                        Toast.makeText(context, "Usuario Eliminado", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        ) {
+            Text("Eliminar Último Usuario")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = id,
+            onValueChange = { id = it },
+            label = { Text(text = "ID") },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = {
+                val user = User(
+                    id = id.toIntOrNull() ?: 0,
+                    nombre = nombre,
+                    apellido = apellido,
+                    edad = edad.toIntOrNull() ?: 0
+                )
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        userRepository.actualizar(user)
+                        users = userRepository.getAllUsers()
+                    }
+                    Toast.makeText(context, "Usuario Actualizado", Toast.LENGTH_SHORT).show()
+                }
+            }) {
+            Text(text = "Actualizar")
         }
     }
 }

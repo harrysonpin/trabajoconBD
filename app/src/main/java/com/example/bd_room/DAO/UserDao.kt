@@ -1,9 +1,11 @@
 package com.example.bd_room.DAO
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.bd_room.Model.User
 
 @Dao //Van a estar todas las accciones sobre la tabla
@@ -18,4 +20,9 @@ interface UserDao {
     @Query("SELECT * FROM users")
     suspend fun getAllUsers(): List<User>
 
+    @Delete
+    suspend fun deleteUser(user: User)
+
+    @Update
+    suspend fun updateUser(user: User)
 }
